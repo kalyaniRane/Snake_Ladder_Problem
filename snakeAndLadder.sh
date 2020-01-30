@@ -21,7 +21,20 @@ function checkNextStep()
 	esac
 }
 
-#function calling
-checkNextStep
+#Function to check players position
+function checkPlayersPosition()
+{
+	while [ $playerPosition -le 100 ]
+	do
+			checkNextStep
+			if [[ $playerPosition -lt 0 ]]
+			then
+					playerPosition=0
+			fi
+		echo "Player current position= $playerPosition"
+	done
+}
 
-echo "Player current position= $playerPosition"
+#function calling
+checkPlayersPosition
+
