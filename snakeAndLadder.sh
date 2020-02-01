@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 echo "Welcome snake And Ladder problem"
 
@@ -10,6 +10,7 @@ SNAKE=2
 #Initialize Variable
 playerPosition=0
 dieCounter=0
+player=2
 
 #Declare a dictionary
 declare -A positionDict
@@ -29,16 +30,28 @@ function checkNextStep()
 			$SNAKE)playerPosition=$((playerPosition - dieNumber))
 				;;
 	esac
-
 }
 
 #Function to check players position
-function checkPlayersPosition()
+function repeatTillWin()
 {
 	while [ $playerPosition -ne 100 ]
 	do
+			#functions calling
+			checkPlayer
 			checkNextStep
+			checkPlayerPosition
 
+			#store players position at dice counter
+			 positionDict[dieCounter]=$playerPosition
+				((dieCounter++))
+	done
+			echo "Player$player is win"
+}
+
+#Function to check Player correct Position
+function checkPlayerPosition()
+{
 			if [[ $playerPosition -lt 0 ]]
 			then
 					playerPosition=0
@@ -46,11 +59,18 @@ function checkPlayersPosition()
 			then
 					playerPosition=$((playerPosition - dieNumber))
 			fi
+}
 
-				 positionDict[dieCounter]=$playerPosition
-				((dieCounter++))
-	done
+#Function to switch the player
+function checkPlayer()
+{
+	if [[ $player -eq 1 ]]
+	then
+			player=2
+	else
+			player=1
+	fi
 }
 
 #function call to check players won position
-checkPlayersPosition
+repeatTillWin
