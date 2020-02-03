@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 echo "Welcome snake And Ladder problem"
 
@@ -6,63 +6,62 @@ echo "Welcome snake And Ladder problem"
 NO_PLAY=0
 LADDER=1
 SNAKE=2
+START_POSITION=0
+WINNING_POSITION=100
+
 
 #Initialize Variable
-playerPosition=0
+playerCurrentPosition=0
 dieCounter=0
 player=2
 
 #Declare a dictionary
-declare -A positionDict
+declare -A scoreBoard
 
-#Function to check the next step of player
-function checkNextStep()
+#Function to get a random number for dice roll and to check the playing option for players
+function checkPlayingOption()
 {
-	#Get a number of die
+
 	dieNumber=$((RANDOM % 6 + 1))
 
-	#Get random number and check the next step for player
 	case $((RANDOM % 3)) in
-			$NO_PLAY)playerPosition=$playerPosition
+			$NO_PLAY)playerCurrentPosition=$playerCurrentPosition
 				;;
-			$LADDER)playerPosition=$((playerPosition + dieNumber))
+			$LADDER)playerCurrentPosition=$((playerCurrentPosition + dieNumber))
 				;;
-			$SNAKE)playerPosition=$((playerPosition - dieNumber))
+			$SNAKE)playerCurrentPosition=$((playerCurrentPosition - dieNumber))
 				;;
 	esac
+	getExactPlayerPosition
 }
 
-#Function to check players position
-function repeatTillWin()
+#Function to check players position and stored the positions of playered in ScoreBoared dictionary
+function playGame()
 {
-	while [ $playerPosition -ne 100 ]
+	while [ $playerCurrentPosition -ne $WINNING_POSITION ]
 	do
-			#functions calling
-			checkPlayer
-			checkNextStep
-			checkPlayerPosition
+			changePlayer
 
-			#store players position at dice counter
-			 positionDict[dieCounter]=$playerPosition
+			 scoreBoard[$player]=$playerCurrentPosition
 				((dieCounter++))
 	done
-			echo "Player$player is win"
+			echo "Player$player is win after $dieCounter DiesRoll"
 }
 
 #Function to check Player correct Position
-function checkPlayerPosition()
+function getExactPlayerPosition()
 {
-			if [[ $playerPosition -lt 0 ]]
+			if [[ $playerCurrentPosition -lt $START_POSITION ]]
 			then
-					playerPosition=0
-			elif [[ $playerPosition -gt 100 ]]
+					playerCurrentPosition=$START_POSITION
+			elif [[ $playerCurrentPosition -gt $WINNING_POSITION ]]
 			then
-					playerPosition=$((playerPosition - dieNumber))
+					playerCurrentPosition=$((playerCurrentPosition - dieNumber))
 			fi
 }
 
 #Function to switch the player
-function checkPlayer()
+function changePlayer()
 {
 	if [[ $player -eq 1 ]]
 	then
@@ -70,7 +69,8 @@ function checkPlayer()
 	else
 			player=1
 	fi
+	checkPlayingOption
 }
 
 #function call to check players won position
-repeatTillWin
+playGame
